@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://testworld/Stats.gd" type="Script" id=1]
+[ext_resource path="res://pops/agentbraina.tscn" type="PackedScene" id=2]
+[ext_resource path="res://testworld/face.tscn" type="PackedScene" id=3]
+[ext_resource path="res://pops/Agent.gd" type="Script" id=4]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 40.0
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 288.0
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 48.0
+
+[node name="Agent" type="KinematicBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource( 4 )
+
+[node name="Stats" type="Node" parent="."]
+script = ExtResource( 1 )
+speed = 400
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="Sensory" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sensory"]
+modulate = Color( 0.309804, 0.27451, 0.27451, 0.439216 )
+shape = SubResource( 2 )
+
+[node name="Interaction" type="Area2D" parent="."]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interaction"]
+shape = SubResource( 3 )
+
+[node name="face" parent="." instance=ExtResource( 3 )]
+modulate = Color( 0.482353, 0.313726, 0.898039, 1 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+
+[node name="ABrain" parent="." groups=[
+"Persist",
+] instance=ExtResource( 2 )]
+input_nodes = 6
+hidden_nodes = 3
+mutation_rate = 0.001
+[connection signal="body_entered" from="Sensory" to="." method="_on_Sensory_body_entered"]
+[connection signal="body_exited" from="Sensory" to="." method="_on_Sensory_body_exited"]
+[connection signal="body_entered" from="Interaction" to="." method="_on_Interaction_body_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="idea" from="ABrain" to="." method="_on_ABrain_idea"]
